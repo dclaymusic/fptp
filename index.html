@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="widthdevice=width">
+        <title>from place to place</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="snd.js"></script>
+        <script src="start.js"></script>
+        <script src="click.js"></script>
+        <script src="tile.js"></script>
+        <script type="text/javascript">
+  
+            var hasStarted = false;
+            var infoWindow = false;
+
+            const scale = 2;
+            const w = 400;
+            const h = 400;
+            const width = 400*scale;
+            const height = 400*scale;
+            const tileW = 200;
+            const tileH = 200;
+            const mapW = 4;
+            const mapH = 4;
+            var activeSounds = [null, null, null, null, 
+                                null, null, null, null, 
+                                null, null, null, null, 
+                                null, null, null, null];
+            var activeAudio = [];
+            const numberOfSounds = 48;
+            var natureChoices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+            var waterChoices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; 
+            var peopleChoices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]; 
+            var windChoices = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];  
+
+            var ctx = null;
+            var currentSecond = 0, frameCount = 0, framesLastSecond = 0, lastFrameTime = 0;
+            var currentFrameTime;
+            var mousePos = [];
+            var isInfoScreen = false;
+
+
+        function fromIndex(m)
+        {
+            x = m % mapW;
+            y = (m - (m % mapW)) / mapH;
+            return([x, y]);
+        }
+
+        function randomInt(max)
+        {
+            rand_val = Math.floor(Math.random() * Math.floor(max + 1))
+            return rand_val;
+        }
+
+        //loading tilesets
+        var tileset = null, tilesetURL = "img/tiles.png",  tilesetLoaded = false;
+
+        var tileTypes = {
+            0: { }, //nothing at the moment
+            1: { sprite:[{x:tileW*0, y:tileH*0, w:tileW, h:tileH}]}, //group 1
+            2: { sprite:[{x:tileW*1, y:tileH*0, w:tileW, h:tileH}]}, //group 2
+            3: { sprite:[{x:tileW*3, y:tileH*0, w:tileW, h:tileH}]}, //group 3
+            4: { sprite:[{x:tileW*2, y:tileH*0, w:tileW, h:tileH}]}, //group 4
+        }
+            const audioCtx = new AudioContext();
+            //var masterGain = audioCtx.createGain();
+            loadnature01(); loadnature02(); loadnature03(); loadnature04(); loadnature05(); loadnature06(); loadnature07(); loadnature08(); loadnature09(); loadnature10(); loadnature11(); loadnature12(); 
+            loadwater01(); loadwater02(); loadwater03(); loadwater04(); loadwater05(); loadwater06(); loadwater07(); loadwater08(); loadwater09(); loadwater10(); loadwater11(); loadwater12();
+            loadpeople01(); loadpeople02(); loadpeople03(); loadpeople04(); loadpeople05(); loadpeople06(); loadpeople07(); loadpeople08(); loadpeople09(); loadpeople10(); loadpeople11(); loadpeople12(); 
+            loadwind01(); loadwind02(); loadwind03(); loadwind04(); loadwind05(); loadwind06(); loadwind07(); loadwind08(); loadwind09(); loadwind10(); loadwind11(); loadwind12(); 
+
+            //Viewport Scanning
+            var viewport = { screen : [0,0] };
+
+            window.onload = function()
+            {
+                //checking to see if mobile device or not
+                let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+                if (isMobile) 
+                {
+                    ctx = null; alert("Sorry, this widget is not designed for mobile devices.");
+                }
+                else 
+                {
+                    ctx = document.getElementById('game').getContext("2d");
+                    requestAnimationFrame(drawGame);
+                    ctx.font = "bold 10pt sans-serif";
+
+                    //window.addEventListener('mousemove', function(e) { getHoverOver(e) });
+                    window.addEventListener('click', function(e) { clickHandler(e) });
+                    window.addEventListener('mousemove', function(e) { mousePos = getHoverOver(e); });
+                    
+                    viewport.screen = [document.getElementById('game').width,
+                        document.getElementById('game').height];
+
+                    //tileset code goes here
+                    tileset = new Image();
+                    tileset.onerror = function()
+                    { ctx = null; alert("Failed loding tileset."); };
+                    tileset.onload = function() { tilesetLoaded = true; }
+                    tileset.src = tilesetURL;
+                    
+                }
+
+                
+            };
+
+            function drawGame()
+            {
+                if(ctx==null) { return; }
+                currentFrameTime = Date.now();
+                var timeElapsed = currentFrameTime - lastFrameTime;
+                var sec = Math.floor(Date.now()/1000);
+                if(sec!=currentSecond)
+                {
+                    currentSecond = sec;
+                    framesLastSecond = frameCount;
+                    frameCount = 1;
+                }
+                else { frameCount++; }
+
+                //////////////////////////////draw background
+                // ctx.fillStyle = "#f9f900";
+                ctx.fillStyle = "#d4bfff";
+                ctx.fillRect(0, 0, viewport.screen[0], viewport.screen[1]);
+
+                if(hasStarted) //app is playing 
+                { 
+                    //draw active sounds
+                    if(activeSounds != undefined)
+                    {
+                        for(let i = 0; i < activeSounds.length; i++)
+                        { 
+                            if(activeSounds[i] != null) { activeSounds[i].draw(); }
+                        }
+                    }
+
+                    if(isInfoScreen)
+                    {
+
+                    }
+                }
+                else if(!hasStarted) //loading sounds
+                { loadbarHandler(); }
+
+                // frameRate();
+                lastFrameTime = currentFrameTime;
+                requestAnimationFrame(drawGame);
+            }
+
+</script>
+
+</head>
+<body>
+    <header>
+        <img id="img1" src="img/icon1.png" onclick="add(1)"> <!--nature-->
+        <img id="img2" src="img/icon2.png" onclick="add(2)"> <!--water-->
+        <img id="img3" src="img/icon3.png" onclick="add(3)"> <!--people-->
+        <img id="img4" src="img/icon4.png" onclick="add(4)"> <!--wind-->
+        <div id="headdiv">
+            <img id="info" src="img/info.png" onclick="toggleInfo()">
+            <img id="shuffle" src="img/shuffle.png" onclick="shuffle()">
+        </div>
+    </header>
+    <div id="loadscreen">
+        <p id="description">Tap on an icon to add a sound. </p>
+        <img id="titleimg" src="img/title.png">
+        <div id="loadbarfull"> </div>
+        <div id="loadbarloading"></div>
+        <p id="loadtext">Sounds are loading...</p>
+    </div>
+    <div id="infoscreen">
+        <div id="infobuffer"></div>
+        <div id="infomain">
+            <p>Tap on an icon at the top to add a sound from the <img src="img/icon1.png">, 
+                <img src="img/icon2.png">, <img src="img/icon3.png">, or <img src="img/icon4.png"> categories.
+                Once a sound has been added below, you can tap on it to delete it.
+                Click <img src="img/shuffle.png"> to hear a random assortment of sounds.</p>
+        </div>
+    </div>
+    <canvas id="game" width="800" height="800"></canvas>
+</body>
+</html>
