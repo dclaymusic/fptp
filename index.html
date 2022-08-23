@@ -76,35 +76,23 @@
 
             window.onload = function()
             {
-                //checking to see if mobile device or not
-                let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-                if (isMobile) 
-                {
-                    ctx = null; alert("Sorry, this widget is not designed for mobile devices.");
-                }
-                else 
-                {
-                    ctx = document.getElementById('game').getContext("2d");
-                    requestAnimationFrame(drawGame);
-                    ctx.font = "bold 10pt sans-serif";
+                ctx = document.getElementById('game').getContext("2d");
+                requestAnimationFrame(drawGame);
+                ctx.font = "bold 10pt sans-serif";
 
-                    //window.addEventListener('mousemove', function(e) { getHoverOver(e) });
-                    window.addEventListener('click', function(e) { clickHandler(e) });
-                    window.addEventListener('mousemove', function(e) { mousePos = getHoverOver(e); });
-                    
-                    viewport.screen = [document.getElementById('game').width,
-                        document.getElementById('game').height];
-
-                    //tileset code goes here
-                    tileset = new Image();
-                    tileset.onerror = function()
-                    { ctx = null; alert("Failed loding tileset."); };
-                    tileset.onload = function() { tilesetLoaded = true; }
-                    tileset.src = tilesetURL;
-                    
-                }
-
+                //window.addEventListener('mousemove', function(e) { getHoverOver(e) });
+                window.addEventListener('click', function(e) { clickHandler(e) });
+                window.addEventListener('mousemove', function(e) { mousePos = getHoverOver(e); });
                 
+                viewport.screen = [document.getElementById('game').width,
+                    document.getElementById('game').height];
+
+                //tileset code goes here
+                tileset = new Image();
+                tileset.onerror = function()
+                { ctx = null; alert("Failed loding tileset."); };
+                tileset.onload = function() { tilesetLoaded = true; }
+                tileset.src = tilesetURL;        
             };
 
             function drawGame()
