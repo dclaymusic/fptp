@@ -82,6 +82,7 @@
 
                 //window.addEventListener('mousemove', function(e) { getHoverOver(e) });
                 window.addEventListener('click', function(e) { clickHandler(e) });
+                window.addEventListener('touchstart', function(e) { clickHandler(e) });
                 window.addEventListener('mousemove', function(e) { mousePos = getHoverOver(e); });
                 
                 viewport.screen = [document.getElementById('game').width,
