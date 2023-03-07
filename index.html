@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=0.8" />
+        <title>From Place to Place</title>
+        <link rel="stylesheet" href="style.css">
+        <script src="snd.js"></script>
+        <script type="text/javascript">
+
+            var snd; 
+            isLoaded = false;
+            var audioCtx;
+            var sndbuff = null;
+            var hasShuffled = false;
+            var infoScreen = false;
+            var tileCount;
+            var tilesLoaded = [false, false, false, false,
+                                false, false, false, false,
+                                false, false, false, false];
+
+            window.onload = function() {
+                isLoaded = true;
+                let startDiv = document.getElementById('startDiv');
+                startDiv.onclick = function() { initSnd(); }
+                let info = document.getElementById('infoScreen');
+                info.onclick = function() { toggleInfo(); }
+
+                //create empty image files
+                for(let i = 0; i < 12; i++)
+                {
+                    let img = document.createElement('img');
+                    img.src = `img/tile0.png`;
+                    img.style.visibility = 'hidden';
+                    img.id = `t${i}`;
+                    img.onclick = function() { clearTile(i); }
+                    let main = document.getElementById('main');
+                    main.appendChild(img);
+                }
+
+                //create chosen sound list
+                for(let i = 0; i < 4; i++)
+                {
+                    possibleSounds.push([0,1,2,3,4,5,6,7,8,9,10,11]);
+                }
+            }
+
+
+            function randomInt(max)
+            {
+                randVal = Math.floor(Math.random() * Math.floor(max + 1))
+                return randVal;
+            }
+
+            function addTile(tile)
+            {
+                let tileCount;
+                for(let i = 0; i < 12; i++)
+                {
+                    if(tilesLoaded[i] == false)
+                    {
+                        //delcare this index spot as taken, assign image
+                        tilesLoaded[i] = true;
+                        let img = document.getElementById(`t${i}`);
+                        img.src = `img/tile${tile}.png`;
+                        img.style.visibility = 'visible';
+
+                        //keep track of which sounds are available and which have already been chosen
+                        let randomIndex = randomInt(possibleSounds[tile-1].length-1)
+                        let thisSnd = possibleSounds[tile-1][randomIndex];
+                        possibleSounds[tile-1].splice(randomIndex, 1);
+                        currentSounds[i] = [tile-1, thisSnd];
+
+                        //play sound and set up an interval for replaying sound
+                        selectSound(tile,thisSnd,i);
+                        soundingTiles[i] = setInterval(function () { selectSound(tile,thisSnd,i); }, DURATIONS[tile-1][thisSnd]);
+
+                        //set CSS animation
+                        img.style.animation = `fade ${(DURATIONS[tile-1][thisSnd])/1000}s linear infinite`;
+
+                        break;
+                    }
+                }
+            }
+
+            function clearTile(index)
+            {
+                //call the tile by id and make it hidden
+                let thisTile = document.getElementById(`t${index}`);
+                thisTile.src = 'img/tile0.png';
+                thisTile.style.visibility = 'hidden';
+                tilesLoaded[index] = false;
+                
+                //reset animation
+                thisTile.style.animation = 'none';
+                thisTile.offsetHeight; /* trigger reflow */
+                thisTile.style.animation = null; 
+
+                //add the sound back into the 'possible' category and empty current index
+                possibleSounds[currentSounds[index][0]].push(currentSounds[index][1]);
+                currentSounds[index] = [];
+
+                //stop the audio
+                clearInterval(soundingTiles[index]);
+                soundingTiles[index] = null;
+                activeAudio[index].stop();
+                activeAudio[index] = null;
+
+            }
+
+            function toggleInfo() 
+            {
+                let info = document.getElementById('infoScreen');
+                infoScreen = !infoScreen;
+                if(infoScreen) 
+                { info.style.visibility = 'visible'; }
+                else 
+                { info.style.visibility = 'hidden'; }
+            }
+
+            function shuffleSounds()
+            {
+                for(let i = 0; i < 12; i++)
+                {
+                    if(tilesLoaded[i])
+                    { clearTile(i); }
+                    addTile(randomInt(3)+1);
+                }
+            }
+            
+
+            </script>
+        </head>
+<body>
+    <header>
+        <img id="img1" src="img/icon1.png" onclick="addTile(1)"> <!--nature-->
+        <img id="img2" src="img/icon2.png" onclick="addTile(2)"> <!--water-->
+        <img id="img3" src="img/icon3.png" onclick="addTile(3)"> <!--people-->
+        <img id="img4" src="img/icon4.png" onclick="addTile(4)"> <!--wind-->
+        <div id="smallButtons">
+            <img id="info" src="img/info.png" onclick="toggleInfo()">
+            <img id="shuffle" src="img/shuffle.png" onclick="shuffleSounds()">
+        </div>
+    </header>
+    <main id="main">
+    </main>
+    <div id="startDiv" class="floatingDiv">
+        <img id="titleimg" src="img/title.png">
+        <div id="loadbarfull"> </div>
+        <div id="loadbarloading"></div>
+        <p id="description">Tap to load sounds and <br> build your own collage.</p>
+    </div>
+    <div id="infoScreen" class="floatingDiv">
+        <p>Tap on an icon at the top to add a sound from the <img src="img/icon1.png">, 
+            <img src="img/icon2.png">, <img src="img/icon3.png">, or <img src="img/icon4.png"> categories.
+            Once a sound has been added below, you can tap on it to delete it.
+            Click <img src="img/shuffle.png"> to hear a random assortment of sounds.</p>
+        <p>Learn more about the project <a href='https://dannyclay.bandcamp.com/album/from-place-to-place-2021' target="_blank">here.</a></p>
+    </div>
+</body>
+
+</html>

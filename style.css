@@ -1,0 +1,140 @@
+@font-face {
+    font-family: 'Karla';
+    src: url(karla.ttf);
+}
+
+body {
+    margin: 0px;
+    padding: 0px; 
+    overflow:hidden; 
+    position: relative;
+    display: block; 
+    user-select: none; 
+    background-color: rgb(212,191,255);    
+}
+
+a, a:visited { color: black; }
+
+main, header, div {
+    background-color: rgb(212,191,255);
+}
+
+p {
+    font-family: 'Karla';
+    font-size: 1.3rem;
+}
+
+main {
+    display: block;
+    width: 340px;
+    height: 280px;
+    padding: 2.5px;
+}
+
+.floatingDiv {
+    padding: 2.5px;
+    padding-bottom: 15px;
+    width: 340px;
+    height: 320px;
+    position: absolute;
+    top: 0;
+    cursor: pointer;
+}
+
+header {
+    width: 340px;
+    height: 75px;
+    margin: 0px; 
+    padding: 2.5px;
+    display: flex;
+    justify-content: space-between;
+}
+
+header > img {
+    width: 75px;
+    height: 75px;
+    padding: 0px;
+    margin: 0px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#smallButtons > img {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+    display: block;
+    cursor: pointer;
+}
+
+main > img {
+    width: 80px;
+    height: 80px;
+    margin: 2.5px;
+}
+
+#shuffle { 
+    margin-top: 5px;
+}
+
+@keyframes fade { 
+    /* what happens at every stage of the animation */
+    0% {
+        opacity: 1.0;
+    }
+    100% {
+        opacity: 0.2;
+    }
+}
+
+/* Title and Loading Screen */
+
+#startDiv {
+    text-align: center;
+}
+
+#titleimg {
+    height: 60%;
+    margin-top: 40px;
+}
+
+#description {
+    margin-top: 10px;
+}
+
+#loadbarfull, #loadbarloading {
+    visibility: hidden;
+    /* all px relative to loadscreen */
+    position: absolute;
+    border: 2px solid black;
+    border-radius: 5px;
+    left: 75px;
+    top: 250px;
+    background-color: #d4bfff;
+    height: 20px;
+    width: 200px;
+    text-align: center;
+}
+
+#loadbarloading {
+    background-color: black;
+}
+
+/* Info Screen */
+
+#infoScreen {
+    margin: 0px;
+    visibility: hidden;
+    position: absolute;
+    text-align: left;
+}
+
+#infoScreen p {
+    line-height: 2.15rem;
+    margin: 2% 5%;
+}
+
+#infoScreen img { 
+    height: 30px;
+    border-radius: 5px;
+}
